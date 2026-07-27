@@ -135,7 +135,7 @@ MOCK_MENU = [
         "price": 6.99,
         "category": "Sides",
         "is_available": True,
-        "image_url": "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&q=80",
+        "image_url": "https://images.unsplash.com/photo-1573821663912-569905455b1c?w=500&q=80",
     },
     {
         "id": 10,
