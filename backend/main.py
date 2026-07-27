@@ -5,13 +5,7 @@ from pydantic import BaseModel
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from typing import List
-
-try:
-    import google.generativeai as genai
-    HAS_GEMINI_SDK = True
-except ImportError:
-    HAS_GEMINI_SDK = False
-
+import httpx
 from models import (
     MenuItem,
     OrderCreate,
@@ -58,14 +52,8 @@ supabase: Client | None = None
 if url and key:
     supabase = create_client(url, key)
 
-# Initialize Gemini AI
+# Get Gemini AI Key
 gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
-if HAS_GEMINI_SDK and gemini_api_key:
-    genai.configure(api_key=gemini_api_key)
-    gemini_model = genai.GenerativeModel('gemini-2.5-flash')
-else:
-    gemini_model = None
-
 # Rich Fine Dining Menu
 MOCK_MENU = [
     {
@@ -476,7 +464,7 @@ def query_ai_assistant(req: AIAssistantRequest):
         except Exception:
             pass
             
-    if gemini_model:
+    if gemini_api_key:
         try:
             context = f"""
 You are the MenuPlus AI Restaurant Manager Assistant.
@@ -491,8 +479,19 @@ Answer the manager's query clearly, concisely, and based ONLY on this restaurant
 Provide brief 1-3 sentence answers. Do not use Markdown formatting like **.
 """
             prompt = context + "\n\nManager's Query: " + req.query
-            response = gemini_model.generate_content(prompt)
-            ans = response.text.replace('*', '').strip()
+            
+            # Use raw HTTP to bypass Windows grpcio DLL issues
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_api_key}"
+            payload = {
+                "contents": [{"parts": [{"text": prompt}]}]
+            }
+            
+            with httpx.Client() as client:
+                response = client.post(url, json=payload, timeout=10.0)
+                response.raise_for_status()
+                data = response.json()
+                
+                ans = data["candidates"][0]["content"]["parts"][0]["text"].replace('*', '').strip()
             
             # Simple heuristic for suggested actions based on context
             actions = ["View Analytics Chart", "Create Supplier Order"] if low_stock else ["View Analytics Chart", "Manage Staff Shifts"]
@@ -500,6 +499,7 @@ Provide brief 1-3 sentence answers. Do not use Markdown formatting like **.
         except Exception as e:
             print(f"Gemini API Error: {e}")
             # Fall back to heuristic if API fails
+
 
     # Fallback heuristic logic if no Gemini API key or error
     if "best seller" in q or "popular" in q:
