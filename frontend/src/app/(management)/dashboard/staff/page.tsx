@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 
 interface StaffMember {
   id: number;
-  name: str;
-  role: str;
-  shift: str;
-  status: str;
+  name: string;
+  role: string;
+  shift: string;
+  status: string;
   rating: number;
 }
 
