@@ -481,7 +481,7 @@ Provide brief 1-3 sentence answers. Do not use Markdown formatting like **.
             prompt = context + "\n\nManager's Query: " + req.query
             
             # Use raw HTTP to bypass Windows grpcio DLL issues
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={gemini_api_key}"
             payload = {
                 "contents": [{"parts": [{"text": prompt}]}]
             }
