@@ -86,9 +86,19 @@ def get_menu():
 def get_orders():
     if supabase:
         try:
-            response = supabase.table("orders").select("*").order("created_at", desc=True).execute()
-            return response.data
-        except Exception:
+            response = supabase.table("orders").select("*, order_items(quantity, menu_items(name))").order("created_at", desc=True).execute()
+            orders_list = []
+            for row in response.data:
+                items_str_list = []
+                for oi in row.get("order_items", []):
+                    qty = oi.get("quantity", 1)
+                    name = oi.get("menu_items", {}).get("name", "Item") if oi.get("menu_items") else "Item"
+                    items_str_list.append(f"{qty}x {name}")
+                row["items"] = ", ".join(items_str_list) if items_str_list else "Custom Order"
+                orders_list.append(row)
+            return orders_list
+        except Exception as e:
+            print(f"DB Error fetching orders: {e}")
             pass
     return [
         { "id": "ORD-001", "items": "2x Classic Burger, 1x Truffle Fries", "total_amount": 32.97, "status": "New", "created_at": "2 mins ago" },
@@ -107,8 +117,19 @@ def create_order(order: OrderCreate):
             order_data = {"status": "New", "total_amount": order.total_amount, "table_number": order.table_number}
             response = supabase.table("orders").insert(order_data).execute()
             if response.data:
+                db_order_id = response.data[0]['id']
+                items_to_insert = []
+                for item in order.items:
+                    items_to_insert.append({
+                        "order_id": db_order_id,
+                        "menu_item_id": item.menu_item_id,
+                        "quantity": item.quantity
+                    })
+                if items_to_insert:
+                    supabase.table("order_items").insert(items_to_insert).execute()
                 return response.data[0]
-        except Exception:
+        except Exception as e:
+            print(f"DB Error creating order: {e}")
             pass
 
     return OrderResponse(id=f"ORD-{order_id}", status="New", total_amount=order.total_amount, created_at=created_at)
