@@ -13,12 +13,18 @@ interface MenuItem {
 }
 
 const MOCK_MENU_ITEMS: MenuItem[] = [
-  {"id": 1, "name": "Classic Burger", "description": "Juicy beef patty, cheddar, lettuce, tomato, special sauce.", "price": 12.99, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80"},
-  {"id": 2, "name": "Vegan Wrap", "description": "Grilled vegetables, organic hummus, baby spinach.", "price": 10.50, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80"},
-  {"id": 3, "name": "Truffle Fries", "description": "Hand-cut crispy fries with black truffle oil and parmesan.", "price": 6.99, "category": "Sides", "is_available": true, "image_url": "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&q=80"},
-  {"id": 4, "name": "Matcha Latte", "description": "Ceremonial grade Japanese matcha with oat milk.", "price": 5.50, "category": "Drinks", "is_available": true, "image_url": "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=500&q=80"},
-  {"id": 5, "name": "Artisanal Pizza", "description": "Wood-fired crust, San Marzano tomato sauce, fresh mozzarella.", "price": 15.99, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80"},
-  {"id": 6, "name": "Tiramisu Delight", "description": "Traditional Italian coffee-flavored layer cake.", "price": 7.50, "category": "Desserts", "is_available": true, "image_url": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80"}
+  {"id": 1, "name": "Pan-Seared Scallops", "description": "Diver scallops, sunchoke purée, pickled shimeji mushrooms, herb emulsion.", "price": 28.00, "category": "Appetizers", "is_available": true, "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80"},
+  {"id": 2, "name": "Crispy Calamari", "description": "Lightly battered squid rings, roasted garlic aioli, lemon zest.", "price": 14.50, "category": "Appetizers", "is_available": true, "image_url": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=500&q=80"},
+  {"id": 3, "name": "Classic Burger", "description": "Juicy beef patty, cheddar, lettuce, tomato, special sauce.", "price": 12.99, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80"},
+  {"id": 4, "name": "A5 Wagyu Striploin", "description": "Charcoal grilled Wagyu steak, black garlic tare, smoked sea salt.", "price": 85.00, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1558030006-450675393462?w=500&q=80"},
+  {"id": 5, "name": "Miso Glazed Cod", "description": "Sustainably sourced black cod, baby bok choy, dashi broth, chili oil.", "price": 42.00, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&q=80"},
+  {"id": 6, "name": "Vegan Wrap", "description": "Grilled Mediterranean vegetables, organic hummus, baby spinach.", "price": 10.50, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80"},
+  {"id": 7, "name": "Artisanal Pizza", "description": "Wood-fired sourdough crust, San Marzano tomato sauce, fresh mozzarella.", "price": 15.99, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80"},
+  {"id": 8, "name": "Maitake Mushroom Forest", "description": "Roasted hen-of-the-woods, pea purée, truffle snow.", "price": 34.00, "category": "Mains", "is_available": true, "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500&q=80"},
+  {"id": 9, "name": "Truffle Fries", "description": "Hand-cut crispy fries with black truffle oil and parmesan.", "price": 6.99, "category": "Sides", "is_available": true, "image_url": "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&q=80"},
+  {"id": 10, "name": "The Nebula Sour", "description": "Empress gin, clarified lemon, yuzu foam, interactive smoke bubble presentation.", "price": 22.00, "category": "Drinks", "is_available": true, "image_url": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=500&q=80"},
+  {"id": 11, "name": "Matcha Latte", "description": "Ceremonial grade Japanese matcha with oat milk.", "price": 5.50, "category": "Drinks", "is_available": true, "image_url": "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=500&q=80"},
+  {"id": 12, "name": "Tiramisu Delight", "description": "Traditional Italian coffee-flavored layer cake.", "price": 7.50, "category": "Desserts", "is_available": true, "image_url": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80"}
 ];
 
 export default function MenuPage() {
@@ -80,7 +86,7 @@ export default function MenuPage() {
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
           Our <span className="text-gradient">Digital Menu</span>
         </h1>
-        <p className="text-slate-400 text-lg">Curated selections powered by intelligent insights</p>
+        <p className="text-slate-400 text-lg">Curated fine dining selections powered by intelligent insights</p>
       </div>
 
       {/* Category Filters */}
@@ -91,7 +97,7 @@ export default function MenuPage() {
             onClick={() => setActiveCategory(cat)}
             className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
               activeCategory === cat
-                ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white shadow-lg shadow-purple-500/20'
+                ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white shadow-lg shadow-purple-500/20 font-bold'
                 : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:bg-slate-800 hover:text-white'
             }`}
           >
@@ -109,7 +115,7 @@ export default function MenuPage() {
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <div>
-              <div className="relative h-52 w-full overflow-hidden">
+              <div className="relative h-56 w-full overflow-hidden">
                 <img 
                   src={item.image_url} 
                   alt={item.name}

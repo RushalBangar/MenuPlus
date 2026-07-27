@@ -34,14 +34,20 @@ supabase: Client | None = None
 if url and key:
     supabase = create_client(url, key)
 
-# Mock Data Storage for standalone operation
+# Rich Fine Dining Menu
 MOCK_MENU = [
-    {"id": 1, "name": "Classic Burger", "description": "Juicy beef patty, cheddar, lettuce, tomato, special sauce.", "price": 12.99, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80"},
-    {"id": 2, "name": "Vegan Wrap", "description": "Grilled vegetables, organic hummus, baby spinach.", "price": 10.50, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80"},
-    {"id": 3, "name": "Truffle Fries", "description": "Hand-cut crispy fries with black truffle oil and parmesan.", "price": 6.99, "category": "Sides", "is_available": True, "image_url": "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&q=80"},
-    {"id": 4, "name": "Matcha Latte", "description": "Ceremonial grade Japanese matcha with oat milk.", "price": 5.50, "category": "Drinks", "is_available": True, "image_url": "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=500&q=80"},
-    {"id": 5, "name": "Artisanal Pizza", "description": "Wood-fired crust, San Marzano tomato sauce, fresh mozzarella.", "price": 15.99, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80"},
-    {"id": 6, "name": "Tiramisu Delight", "description": "Traditional Italian coffee-flavored layer cake.", "price": 7.50, "category": "Desserts", "is_available": True, "image_url": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80"}
+    {"id": 1, "name": "Pan-Seared Scallops", "description": "Diver scallops, sunchoke purée, pickled shimeji mushrooms, herb emulsion.", "price": 28.00, "category": "Appetizers", "is_available": True, "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80"},
+    {"id": 2, "name": "Crispy Calamari", "description": "Lightly battered squid rings, roasted garlic aioli, lemon zest.", "price": 14.50, "category": "Appetizers", "is_available": True, "image_url": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=500&q=80"},
+    {"id": 3, "name": "Classic Burger", "description": "Juicy beef patty, cheddar, lettuce, tomato, special sauce.", "price": 12.99, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80"},
+    {"id": 4, "name": "A5 Wagyu Striploin", "description": "Charcoal grilled Wagyu steak, black garlic tare, smoked sea salt.", "price": 85.00, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1558030006-450675393462?w=500&q=80"},
+    {"id": 5, "name": "Miso Glazed Cod", "description": "Sustainably sourced black cod, baby bok choy, dashi broth, chili oil.", "price": 42.00, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&q=80"},
+    {"id": 6, "name": "Vegan Wrap", "description": "Grilled Mediterranean vegetables, organic hummus, baby spinach.", "price": 10.50, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80"},
+    {"id": 7, "name": "Artisanal Pizza", "description": "Wood-fired sourdough crust, San Marzano tomato sauce, fresh mozzarella.", "price": 15.99, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80"},
+    {"id": 8, "name": "Maitake Mushroom Forest", "description": "Roasted hen-of-the-woods, pea purée, truffle snow.", "price": 34.00, "category": "Mains", "is_available": True, "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500&q=80"},
+    {"id": 9, "name": "Truffle Fries", "description": "Hand-cut crispy fries with black truffle oil and parmesan.", "price": 6.99, "category": "Sides", "is_available": True, "image_url": "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&q=80"},
+    {"id": 10, "name": "The Nebula Sour", "description": "Empress gin, clarified lemon, yuzu foam, interactive smoke bubble presentation.", "price": 22.00, "category": "Drinks", "is_available": True, "image_url": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=500&q=80"},
+    {"id": 11, "name": "Matcha Latte", "description": "Ceremonial grade Japanese matcha with oat milk.", "price": 5.50, "category": "Drinks", "is_available": True, "image_url": "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=500&q=80"},
+    {"id": 12, "name": "Tiramisu Delight", "description": "Traditional Italian coffee-flavored layer cake.", "price": 7.50, "category": "Desserts", "is_available": True, "image_url": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80"}
 ]
 
 MOCK_STAFF = [
@@ -91,19 +97,19 @@ def get_ai_recommendations(req: AIRecommendationRequest):
     recommendations = []
     
     # Smart pairing logic
-    if 1 in selected_ids or 5 in selected_ids: # Burger or Pizza -> Recommend Truffle Fries & Drinks
-        recommendations.append(MOCK_MENU[2]) # Truffle Fries
-        recommendations.append(MOCK_MENU[3]) # Matcha Latte
-        reasoning = "Customers who ordered burgers/pizzas loved pairing them with crispy Truffle Fries and Matcha Latte!"
+    if 3 in selected_ids or 7 in selected_ids or 4 in selected_ids: # Burger/Pizza/Wagyu -> Truffle Fries & Nebula Sour
+        recommendations.append(MOCK_MENU[8]) # Truffle Fries
+        recommendations.append(MOCK_MENU[9]) # Nebula Sour
+        reasoning = "Customers who ordered burgers/steaks/pizzas loved pairing them with Truffle Fries and signature Nebula Sour!"
         offer = "Add Truffle Fries for 15% OFF!"
-    elif 2 in selected_ids: # Vegan Wrap -> Recommend Matcha Latte
-        recommendations.append(MOCK_MENU[3])
-        recommendations.append(MOCK_MENU[5]) # Tiramisu
-        reasoning = "Healthy choice! Pair your Vegan Wrap with our ceremonial Matcha Latte & Tiramisu."
+    elif 1 in selected_ids or 5 in selected_ids: # Scallops or Cod -> Recommend Matcha Latte & Tiramisu
+        recommendations.append(MOCK_MENU[10]) # Matcha Latte
+        recommendations.append(MOCK_MENU[11]) # Tiramisu
+        reasoning = "Seafood delicacy! Pair with our ceremonial Matcha Latte & Tiramisu Delight."
         offer = "Free Matcha upgrade available!"
     else:
-        recommendations.append(MOCK_MENU[0]) # Classic Burger
-        recommendations.append(MOCK_MENU[2]) # Truffle Fries
+        recommendations.append(MOCK_MENU[0]) # Scallops
+        recommendations.append(MOCK_MENU[8]) # Truffle Fries
         reasoning = "Chef's top recommendation for today based on high customer ratings."
         offer = "Special Combo Saver available!"
         
@@ -127,10 +133,10 @@ def query_ai_assistant(req: AIAssistantRequest):
     q = req.query.lower()
     
     if "best seller" in q or "popular" in q:
-        ans = "Our top-selling item today is the **Classic Burger** with 48 orders, followed closely by **Truffle Fries**!"
+        ans = "Our top-selling item today is the **Classic Burger** with 48 orders, followed closely by **A5 Wagyu Striploin** and **Truffle Fries**!"
         actions = ["View Top Items", "Check Inventory for Beef Patties"]
     elif "revenue" in q or "sales" in q:
-        ans = "Total revenue today is **$2,840.50** across 64 orders. Average order value is **$44.38**."
+        ans = "Total revenue today is **$3,428.50** across 72 orders. Average order value is **$47.61**."
         actions = ["View Analytics Chart", "Export Daily Report"]
     elif "stock" in q or "inventory" in q:
         ans = "⚠️ **Low Stock Alert**: Truffle Oil has 1.5L remaining (estimated depletion in 2 days). We recommend placing a restock order today."
@@ -139,7 +145,7 @@ def query_ai_assistant(req: AIAssistantRequest):
         ans = "Currently 4 staff members are on active shift. Chef Gordon is managing kitchen orders, and Sarah Connor is heading floor service."
         actions = ["Manage Staff Shifts", "Assign New Task"]
     else:
-        ans = f"AI Assistant analyzed restaurant operations regarding '{req.query}': Operational efficiency is currently at 94%. Table turnover rate is 42 minutes per table."
+        ans = f"AI Assistant analyzed restaurant operations regarding '{req.query}': Operational efficiency is currently at 96%. Table turnover rate is 38 minutes per table."
         actions = ["Generate Full Insights Report", "Optimize Seating Plan"]
         
     return AIAssistantResponse(answer=ans, suggested_actions=actions)
@@ -153,10 +159,10 @@ def get_staff():
 def get_analytics():
     return SalesAnalytics(
         total_revenue=34280.50,
-        orders_today=64,
-        active_tables=8,
-        top_selling_item="Classic Burger",
-        average_order_value=44.38,
+        orders_today=72,
+        active_tables=9,
+        top_selling_item="Classic Burger & Wagyu Striploin",
+        average_order_value=47.61,
         peak_hours="1:00 PM - 2:30 PM & 7:00 PM - 9:00 PM"
     )
 

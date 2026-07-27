@@ -53,12 +53,18 @@ CREATE TABLE IF NOT EXISTS staff (
 -- SEED MOCK DATA FOR DEMO
 
 INSERT INTO menu_items (id, name, description, price, category, is_available, image_url) VALUES
-(1, 'Classic Burger', 'Juicy beef patty, cheddar, lettuce, tomato, special sauce.', 12.99, 'Mains', TRUE, 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80'),
-(2, 'Vegan Wrap', 'Grilled vegetables, organic hummus, baby spinach.', 10.50, 'Mains', TRUE, 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80'),
-(3, 'Truffle Fries', 'Hand-cut crispy fries with black truffle oil and parmesan.', 6.99, 'Sides', TRUE, 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&q=80'),
-(4, 'Matcha Latte', 'Ceremonial grade Japanese matcha with oat milk.', 5.50, 'Drinks', TRUE, 'https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=500&q=80'),
-(5, 'Artisanal Pizza', 'Wood-fired crust, San Marzano tomato sauce, fresh mozzarella.', 15.99, 'Mains', TRUE, 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80'),
-(6, 'Tiramisu Delight', 'Traditional Italian coffee-flavored layer cake.', 7.50, 'Desserts', TRUE, 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80')
+(1, 'Pan-Seared Scallops', 'Diver scallops, sunchoke purée, pickled shimeji mushrooms, herb emulsion.', 28.00, 'Appetizers', TRUE, 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80'),
+(2, 'Crispy Calamari', 'Lightly battered squid rings, roasted garlic aioli, lemon zest.', 14.50, 'Appetizers', TRUE, 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=500&q=80'),
+(3, 'Classic Burger', 'Juicy beef patty, cheddar, lettuce, tomato, special sauce.', 12.99, 'Mains', TRUE, 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80'),
+(4, 'A5 Wagyu Striploin', 'Charcoal grilled Wagyu steak, black garlic tare, smoked sea salt.', 85.00, 'Mains', TRUE, 'https://images.unsplash.com/photo-1558030006-450675393462?w=500&q=80'),
+(5, 'Miso Glazed Cod', 'Sustainably sourced black cod, baby bok choy, dashi broth, chili oil.', 42.00, 'Mains', TRUE, 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&q=80'),
+(6, 'Vegan Wrap', 'Grilled Mediterranean vegetables, organic hummus, baby spinach.', 10.50, 'Mains', TRUE, 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80'),
+(7, 'Artisanal Pizza', 'Wood-fired sourdough crust, San Marzano tomato sauce, fresh mozzarella.', 15.99, 'Mains', TRUE, 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80'),
+(8, 'Maitake Mushroom Forest', 'Roasted hen-of-the-woods, pea purée, truffle snow.', 34.00, 'Mains', TRUE, 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500&q=80'),
+(9, 'Truffle Fries', 'Hand-cut crispy fries with black truffle oil and parmesan.', 6.99, 'Sides', TRUE, 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&q=80'),
+(10, 'The Nebula Sour', 'Empress gin, clarified lemon, yuzu foam, interactive smoke bubble presentation.', 22.00, 'Drinks', TRUE, 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=500&q=80'),
+(11, 'Matcha Latte', 'Ceremonial grade Japanese matcha with oat milk.', 5.50, 'Drinks', TRUE, 'https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=500&q=80'),
+(12, 'Tiramisu Delight', 'Traditional Italian coffee-flavored layer cake.', 7.50, 'Desserts', TRUE, 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO inventory (id, ingredient_name, quantity, unit, low_stock_threshold) VALUES
