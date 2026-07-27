@@ -33,20 +33,29 @@ const INITIAL_INVENTORY: InventoryItem[] = [
   { id: 12, ingredient_name: 'Parmesan', quantity: 1, unit: 'kg', low_stock_threshold: 2 },
 ];
 
+const DEFAULT_FORECASTS: ForecastItem[] = [
+  { ingredient_name: 'Truffle Oil', current_stock: 1.5, unit: 'Liters', predicted_depletion_days: 2, restock_recommended: true, urgency: 'high' },
+  { ingredient_name: 'Beef Patties', current_stock: 14, unit: 'Kg', predicted_depletion_days: 3, restock_recommended: true, urgency: 'medium' },
+  { ingredient_name: 'Matcha Powder', current_stock: 0.8, unit: 'Kg', predicted_depletion_days: 4, restock_recommended: true, urgency: 'medium' }
+];
+
 export default function InventoryPage() {
   const [inventory, setInventory] = useState<InventoryItem[]>(INITIAL_INVENTORY);
   const [showLowOnly, setShowLowOnly] = useState(false);
-  const [forecasts, setForecasts] = useState<ForecastItem[]>([
-    { ingredient_name: 'Truffle Oil', current_stock: 1.5, unit: 'Liters', predicted_depletion_days: 2, restock_recommended: true, urgency: 'high' },
-    { ingredient_name: 'Beef Patties', current_stock: 14, unit: 'Kg', predicted_depletion_days: 3, restock_recommended: true, urgency: 'medium' },
-    { ingredient_name: 'Matcha Powder', current_stock: 0.8, unit: 'Kg', predicted_depletion_days: 4, restock_recommended: true, urgency: 'medium' }
-  ]);
+  const [forecasts, setForecasts] = useState<ForecastItem[]>(DEFAULT_FORECASTS);
 
   useEffect(() => {
     fetch('https://menuplus.onrender.com/api/ai/inventory-forecast')
-      .then(res => res.json())
-      .then(data => setForecasts(data))
-      .catch(() => {});
+      .then(res => {
+        if (!res.ok) throw new Error('API offline');
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) setForecasts(data);
+      })
+      .catch(() => {
+        setForecasts(DEFAULT_FORECASTS);
+      });
   }, []);
 
   const isLowStock = (item: InventoryItem) => item.quantity <= item.low_stock_threshold;
@@ -70,7 +79,7 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Inventory & Stock Control</h1>
           <p className="text-slate-400 mt-1">{inventory.length} ingredients tracked</p>
