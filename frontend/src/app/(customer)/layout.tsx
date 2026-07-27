@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useEffect, useState } from 'react';
 
 export default function CustomerLayout({
   children,
@@ -10,6 +11,21 @@ export default function CustomerLayout({
 }) {
   const { totalItems } = useCart();
   const pathname = usePathname();
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    const role = localStorage.getItem('menuplus_auth_role');
+    if (!role) {
+      router.push('/login');
+    } else {
+      setAuthorized(true);
+    }
+  }, [router]);
+
+  if (!authorized) {
+    return <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] text-purple-400">Authenticating...</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0e1a]">
