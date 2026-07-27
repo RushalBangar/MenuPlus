@@ -120,6 +120,7 @@ export default function MenuPage() {
                 <img 
                   src={item.image_url} 
                   alt={item.name}
+                  referrerPolicy="no-referrer"
                   className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-transparent to-transparent" />
