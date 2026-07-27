@@ -18,21 +18,6 @@ interface ForecastItem {
   urgency: string;
 }
 
-const INITIAL_INVENTORY: InventoryItem[] = [
-  { id: 1, ingredient_name: 'Beef Patties', quantity: 45, unit: 'pcs', low_stock_threshold: 20 },
-  { id: 2, ingredient_name: 'Burger Buns', quantity: 60, unit: 'pcs', low_stock_threshold: 25 },
-  { id: 3, ingredient_name: 'Lettuce', quantity: 8, unit: 'kg', low_stock_threshold: 5 },
-  { id: 4, ingredient_name: 'Tomatoes', quantity: 3, unit: 'kg', low_stock_threshold: 5 },
-  { id: 5, ingredient_name: 'Cheddar Cheese', quantity: 4, unit: 'kg', low_stock_threshold: 3 },
-  { id: 6, ingredient_name: 'Truffle Oil', quantity: 0.5, unit: 'L', low_stock_threshold: 1 },
-  { id: 7, ingredient_name: 'Fries (Frozen)', quantity: 25, unit: 'kg', low_stock_threshold: 10 },
-  { id: 8, ingredient_name: 'Matcha Powder', quantity: 2, unit: 'kg', low_stock_threshold: 1 },
-  { id: 9, ingredient_name: 'Oat Milk', quantity: 12, unit: 'L', low_stock_threshold: 5 },
-  { id: 10, ingredient_name: 'Hummus', quantity: 1.5, unit: 'kg', low_stock_threshold: 2 },
-  { id: 11, ingredient_name: 'Tortilla Wraps', quantity: 30, unit: 'pcs', low_stock_threshold: 15 },
-  { id: 12, ingredient_name: 'Parmesan', quantity: 1, unit: 'kg', low_stock_threshold: 2 },
-];
-
 const DEFAULT_FORECASTS: ForecastItem[] = [
   { ingredient_name: 'Truffle Oil', current_stock: 1.5, unit: 'Liters', predicted_depletion_days: 2, restock_recommended: true, urgency: 'high' },
   { ingredient_name: 'Beef Patties', current_stock: 14, unit: 'Kg', predicted_depletion_days: 3, restock_recommended: true, urgency: 'medium' },
@@ -40,11 +25,30 @@ const DEFAULT_FORECASTS: ForecastItem[] = [
 ];
 
 export default function InventoryPage() {
-  const [inventory, setInventory] = useState<InventoryItem[]>(INITIAL_INVENTORY);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [showLowOnly, setShowLowOnly] = useState(false);
   const [forecasts, setForecasts] = useState<ForecastItem[]>(DEFAULT_FORECASTS);
+  const [loading, setLoading] = useState(true);
+
+  const fetchInventory = async () => {
+    try {
+      const res = await fetch('https://menuplus.onrender.com/api/inventory');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          setInventory(data);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    fetchInventory();
+    
     fetch('https://menuplus.onrender.com/api/ai/inventory-forecast')
       .then(res => {
         if (!res.ok) throw new Error('API offline');
@@ -66,12 +70,22 @@ export default function InventoryPage() {
     return 'low';
   };
 
-  const handleRestock = (id: number) => {
-    setInventory(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, quantity: item.low_stock_threshold * 3 } : item
-      )
-    );
+  const handleRestock = async (id: number) => {
+    try {
+      // Optimistic update
+      setInventory(prev =>
+        prev.map(item =>
+          item.id === id ? { ...item, quantity: item.low_stock_threshold * 3 } : item
+        )
+      );
+      await fetch(`https://menuplus.onrender.com/api/inventory/${id}/restock`, {
+        method: 'PUT'
+      });
+      // Refresh real values
+      fetchInventory();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const displayed = showLowOnly ? inventory.filter(isLowStock) : inventory;
@@ -148,7 +162,11 @@ export default function InventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {displayed.map(item => {
+              {loading && inventory.length === 0 ? (
+                <tr><td colSpan={5} className="py-8 text-center text-slate-400">Loading live inventory data...</td></tr>
+              ) : inventory.length === 0 ? (
+                <tr><td colSpan={5} className="py-8 text-center text-slate-400">No inventory items found. (Check Supabase setup)</td></tr>
+              ) : displayed.map(item => {
                 const level = stockLevel(item);
                 const levelConfig = {
                   good: { bar: 'bg-emerald-500', text: 'text-emerald-400', width: 'w-full' },

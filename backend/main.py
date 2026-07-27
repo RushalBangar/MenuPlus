@@ -1,6 +1,7 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from typing import List
@@ -81,6 +82,19 @@ def get_menu():
     except Exception:
         return MOCK_MENU
 
+@app.get("/api/orders")
+def get_orders():
+    if supabase:
+        try:
+            response = supabase.table("orders").select("*").order("created_at", desc=True).execute()
+            return response.data
+        except Exception:
+            pass
+    return [
+        { "id": "ORD-001", "items": "2x Classic Burger, 1x Truffle Fries", "total_amount": 32.97, "status": "New", "created_at": "2 mins ago" },
+        { "id": "ORD-002", "items": "1x Vegan Wrap", "total_amount": 10.50, "status": "Preparing", "created_at": "15 mins ago" }
+    ]
+
 @app.post("/api/orders", response_model=OrderResponse)
 def create_order(order: OrderCreate):
     import uuid
@@ -98,6 +112,47 @@ def create_order(order: OrderCreate):
             pass
 
     return OrderResponse(id=f"ORD-{order_id}", status="New", total_amount=order.total_amount, created_at=created_at)
+
+class OrderStatusUpdate(BaseModel):
+    status: str
+
+@app.put("/api/orders/{order_id}/status")
+def update_order_status(order_id: str, update: OrderStatusUpdate):
+    if supabase:
+        try:
+            response = supabase.table("orders").update({"status": update.status}).eq("id", order_id).execute()
+            if response.data:
+                return response.data[0]
+        except Exception:
+            pass
+    return {"status": "updated"}
+
+@app.get("/api/inventory", response_model=List[InventoryItem])
+def get_inventory():
+    if supabase:
+        try:
+            response = supabase.table("inventory").select("*").order("id").execute()
+            if response.data:
+                return response.data
+        except Exception:
+            pass
+    return []
+
+@app.put("/api/inventory/{item_id}/restock")
+def restock_inventory(item_id: int):
+    if supabase:
+        try:
+            # fetch item first
+            item_res = supabase.table("inventory").select("low_stock_threshold").eq("id", item_id).execute()
+            if item_res.data:
+                threshold = item_res.data[0].get("low_stock_threshold", 5)
+                new_qty = threshold * 3
+                response = supabase.table("inventory").update({"quantity": new_qty}).eq("id", item_id).execute()
+                if response.data:
+                    return response.data[0]
+        except Exception:
+            pass
+    return {"status": "updated"}
 
 # Platinum AI Operations Endpoints
 @app.post("/api/ai/recommendations", response_model=AIRecommendationResponse)
@@ -130,6 +185,7 @@ def get_ai_recommendations(req: AIRecommendationRequest):
 
 @app.get("/api/ai/inventory-forecast", response_model=List[DemandForecast])
 def get_inventory_forecast():
+    # If supabase is available, we could calculate this dynamically. For now, we simulate AI heuristics.
     return [
         DemandForecast(ingredient_name="Truffle Oil", current_stock=1.5, unit="Liters", predicted_depletion_days=2, restock_recommended=True, urgency="high"),
         DemandForecast(ingredient_name="A5 Wagyu / Beef Patties", current_stock=14.0, unit="Kg", predicted_depletion_days=3, restock_recommended=True, urgency="medium"),
@@ -141,14 +197,36 @@ def get_inventory_forecast():
 def query_ai_assistant(req: AIAssistantRequest):
     q = req.query.lower()
     
+    # Dynamic DB checks for Assistant
+    total_rev = 0
+    orders_count = 0
+    low_stock = []
+    if supabase:
+        try:
+            ord_res = supabase.table("orders").select("total_amount").execute()
+            if ord_res.data:
+                orders_count = len(ord_res.data)
+                total_rev = sum(o["total_amount"] for o in ord_res.data if o["total_amount"])
+            
+            inv_res = supabase.table("inventory").select("*").execute()
+            if inv_res.data:
+                for i in inv_res.data:
+                    if float(i["quantity"]) <= float(i["low_stock_threshold"]):
+                        low_stock.append(f"{i['ingredient_name']} ({i['quantity']}{i['unit']})")
+        except Exception:
+            pass
+
     if "best seller" in q or "popular" in q:
         ans = "Our top-selling item today is the **Classic Burger** with 48 orders, followed closely by **A5 Wagyu Striploin** and **Truffle Fries**!"
         actions = ["View Top Items", "Check Inventory for Beef Patties"]
     elif "revenue" in q or "sales" in q:
-        ans = "Total revenue today is **$3,428.50** across 72 orders. Average order value is **$47.61**."
+        ans = f"Based on live data, total revenue today is **${total_rev:.2f}** across {orders_count} orders." if orders_count > 0 else "Total revenue today is **$3,428.50** across 72 orders. Average order value is **$47.61**."
         actions = ["View Analytics Chart", "Export Daily Report"]
     elif "stock" in q or "inventory" in q:
-        ans = "⚠️ **Low Stock Alert**: Truffle Oil has 1.5L remaining (estimated depletion in 2 days). We recommend placing a restock order today."
+        if low_stock:
+            ans = f"⚠️ **Low Stock Alert**: We are running low on {', '.join(low_stock)}. Recommend placing a restock order today."
+        else:
+            ans = "⚠️ **Low Stock Alert**: Truffle Oil has 1.5L remaining (estimated depletion in 2 days). We recommend placing a restock order today."
         actions = ["Create Supplier Order", "View All Inventory"]
     elif "staff" in q or "waiter" in q:
         ans = "Currently 4 staff members are on active shift. Chef Gordon is managing kitchen orders, and Sarah Connor is heading floor service."

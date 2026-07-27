@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import AIAssistantWidget from '@/components/AIAssistantWidget';
+import { useEffect, useState } from 'react';
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: '📊' },
@@ -18,6 +19,21 @@ export default function ManagementLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    const role = localStorage.getItem('menuplus_auth_role');
+    if (role !== 'staff') {
+      router.push('/login');
+    } else {
+      setAuthorized(true);
+    }
+  }, [router]);
+
+  if (!authorized) {
+    return <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] text-purple-400">Authenticating...</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#0a0e1a]">

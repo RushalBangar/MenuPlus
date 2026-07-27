@@ -22,14 +22,17 @@ export default function LoginPage() {
       if (error) {
         // Fallback for demo
         setMessage(`Signed in as ${role.toUpperCase()} (Demo Mode Active)`);
+        localStorage.setItem('menuplus_auth_role', role);
         setTimeout(() => {
           window.location.href = role === 'staff' ? '/dashboard' : '/menu';
         }, 1000);
       } else {
+        localStorage.setItem('menuplus_auth_role', role);
         window.location.href = role === 'staff' ? '/dashboard' : '/menu';
       }
     } catch {
       setMessage(`Signed in as ${role.toUpperCase()} (Demo Mode Active)`);
+      localStorage.setItem('menuplus_auth_role', role);
       setTimeout(() => {
         window.location.href = role === 'staff' ? '/dashboard' : '/menu';
       }, 1000);
