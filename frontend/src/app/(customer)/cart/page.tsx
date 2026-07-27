@@ -3,13 +3,32 @@ import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import DigitalInvoiceModal from '@/components/DigitalInvoiceModal';
+import Image from 'next/image';
+
+interface AIPairingItem {
+  id: number;
+  name: string;
+  description?: string;
+  price: number;
+  category?: string;
+  is_available?: boolean;
+  image_url: string;
+}
+
+interface CartItemData {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  image_url: string;
+}
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, clearCart, totalAmount, totalItems, addItem } = useCart();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
-  const [lastOrderDetails, setLastOrderDetails] = useState<{ id: string; items: any[]; total: number }>({ id: 'ORD-101', items: [], total: 0 });
-  const [aiPairing, setAiPairing] = useState<{ text: string; items: any[]; offer?: string } | null>(null);
+  const [lastOrderDetails, setLastOrderDetails] = useState<{ id: string; items: CartItemData[]; total: number }>({ id: 'ORD-101', items: [], total: 0 });
+  const [aiPairing, setAiPairing] = useState<{ text: string; items: AIPairingItem[]; offer?: string } | null>(null);
 
   useEffect(() => {
     if (items.length > 0) {
@@ -123,8 +142,8 @@ export default function CartPage() {
       <div className="space-y-3">
         {items.map(item => (
           <div key={item.id} className="glass-card-static p-4 rounded-xl flex items-center gap-4">
-            <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
-              <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+            <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden relative">
+              <Image src={item.image_url} alt={item.name} fill sizes="64px" className="object-cover" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base truncate text-white">{item.name}</h3>
@@ -176,7 +195,9 @@ export default function CartPage() {
             {aiPairing.items.map((recItem, idx) => (
               <div key={idx} className="bg-slate-900/90 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <img src={recItem.image_url} alt={recItem.name} className="w-10 h-10 rounded-lg object-cover" />
+                  <div className="w-10 h-10 rounded-lg overflow-hidden relative flex-shrink-0">
+                    <Image src={recItem.image_url} alt={recItem.name} fill sizes="40px" className="object-cover" />
+                  </div>
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-white truncate">{recItem.name}</p>
                     <p className="text-[11px] text-orange-400 font-semibold">${recItem.price.toFixed(2)}</p>

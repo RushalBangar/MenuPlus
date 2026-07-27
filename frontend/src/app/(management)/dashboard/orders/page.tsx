@@ -28,6 +28,7 @@ export default function OrdersPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchOrders();
     const interval = setInterval(fetchOrders, 5000); // 5s polling as requested
     return () => clearInterval(interval);

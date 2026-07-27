@@ -8,7 +8,7 @@ class MenuItem(BaseModel):
     price: float
     category: str
     is_available: bool
-    image_url: str
+    image_url: Optional[str] = None
 
 class OrderItemCreate(BaseModel):
     menu_item_id: int

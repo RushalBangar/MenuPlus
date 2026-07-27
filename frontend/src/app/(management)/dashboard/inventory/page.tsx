@@ -47,6 +47,7 @@ export default function InventoryPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchInventory();
     
     fetch('https://menuplus.onrender.com/api/ai/inventory-forecast')

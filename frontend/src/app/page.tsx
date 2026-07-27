@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 function ApiHealthIndicator() {
@@ -110,8 +111,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative pt-12 pb-20 md:pt-24 md:pb-32 px-4 container mx-auto text-center space-y-8 max-w-5xl">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl overflow-hidden shadow-2xl border border-purple-500/30 glow-violet">
-            <img src="/menuplus_logo.png" alt="MenuPlus Logo" className="w-full h-full object-cover" />
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl overflow-hidden shadow-2xl border border-purple-500/30 glow-violet relative">
+            <Image src="/menuplus_logo.png" alt="MenuPlus Logo" fill className="object-cover" />
           </div>
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs md:text-sm font-semibold">
@@ -294,8 +295,8 @@ export default function Home() {
       <footer className="border-t border-white/[0.08] bg-[#080b14] py-12 px-4 text-slate-500 text-xs">
         <div className="container mx-auto max-w-5xl flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg overflow-hidden border border-purple-500/30">
-              <img src="/menuplus_logo.png" alt="Logo" className="w-full h-full object-cover" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden border border-purple-500/30 relative">
+              <Image src="/menuplus_logo.png" alt="Logo" fill className="object-cover" />
             </div>
             <span className="font-bold text-white text-sm font-headline-md">MenuPlus SaaS</span>
           </div>

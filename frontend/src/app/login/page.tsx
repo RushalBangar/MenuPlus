@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/utils/supabase/client';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [role, setRole] = useState<'customer' | 'staff'>('customer');
@@ -67,8 +68,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md glass-card p-8 rounded-3xl space-y-6 z-10 animate-fade-in border border-slate-800">
         {/* Header Logo */}
         <div className="flex flex-col items-center gap-3 text-center">
-          <Link href="/" className="w-14 h-14 rounded-2xl overflow-hidden shadow-xl border border-purple-500/30">
-            <img src="/menuplus_logo.png" alt="MenuPlus Logo" className="w-full h-full object-cover" />
+          <Link href="/" className="w-14 h-14 rounded-2xl overflow-hidden shadow-xl border border-purple-500/30 relative block">
+            <Image src="/menuplus_logo.png" alt="MenuPlus Logo" fill className="object-cover" />
           </Link>
           <h1 className="text-2xl font-extrabold text-white font-headline-md">Welcome to MenuPlus</h1>
           <p className="text-xs text-slate-400">Secure Access & Role-Based Authentication</p>

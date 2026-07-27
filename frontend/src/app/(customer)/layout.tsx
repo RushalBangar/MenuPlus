@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useEffect, useState } from 'react';
@@ -19,6 +20,7 @@ export default function CustomerLayout({
     if (!role) {
       router.push('/login');
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAuthorized(true);
     }
   }, [router]);
@@ -33,8 +35,8 @@ export default function CustomerLayout({
       <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-[#0a0e1a]/90 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 md:h-20 items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl overflow-hidden shadow-lg border border-purple-500/30">
-              <img src="/menuplus_logo.png" alt="MenuPlus Logo" className="w-full h-full object-cover" />
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl overflow-hidden shadow-lg border border-purple-500/30 relative">
+              <Image src="/menuplus_logo.png" alt="MenuPlus Logo" fill className="object-cover" />
             </div>
             <span className="text-lg md:text-xl font-bold text-white font-headline-md tracking-tight">MenuPlus</span>
           </Link>

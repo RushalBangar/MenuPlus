@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import AIAssistantWidget from '@/components/AIAssistantWidget';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: '📊' },
@@ -27,6 +28,7 @@ export default function ManagementLayout({
     if (role !== 'staff') {
       router.push('/login');
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAuthorized(true);
     }
   }, [router]);
@@ -41,8 +43,8 @@ export default function ManagementLayout({
       <aside className="w-64 flex-shrink-0 border-r border-white/[0.08] bg-[#080b14] hidden md:flex flex-col">
         <div className="h-20 flex items-center px-6 border-b border-white/[0.08]">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-purple-500/30">
-              <img src="/menuplus_logo.png" alt="MenuPlus Logo" className="w-full h-full object-cover" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-purple-500/30 relative">
+              <Image src="/menuplus_logo.png" alt="MenuPlus Logo" fill className="object-cover" />
             </div>
             <div>
               <span className="text-lg font-bold text-white font-headline-md tracking-tight">MenuPlus</span>
@@ -85,8 +87,8 @@ export default function ManagementLayout({
         <header className="h-16 md:h-20 border-b border-white/[0.08] bg-[#0a0e1a]/90 backdrop-blur-xl flex items-center px-4 md:px-8 justify-between sticky top-0 z-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="md:hidden flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg overflow-hidden border border-purple-500/30">
-                <img src="/menuplus_logo.png" alt="Logo" className="w-full h-full object-cover" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden border border-purple-500/30 relative">
+                <Image src="/menuplus_logo.png" alt="Logo" fill className="object-cover" />
               </div>
             </Link>
             <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping hidden sm:inline-block"></span>

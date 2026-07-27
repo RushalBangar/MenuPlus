@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useCart } from '@/context/CartContext';
+import Image from 'next/image';
 
 interface MenuItem {
   id: number;
@@ -116,9 +117,11 @@ export default function MenuPage() {
           >
             <div>
               <div className="relative h-56 w-full overflow-hidden">
-                <img 
+                <Image 
                   src={item.image_url} 
                   alt={item.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-transparent to-transparent" />
