@@ -16,11 +16,20 @@ load_dotenv()
 
 app = FastAPI(title="Smart Restaurant Management System API", version="1.0.0")
 
-# CORS middleware for Next.js frontend
-frontend_url = os.environ.get("FRONTEND_URL", "*")
+# CORS middleware configured for Vercel production and local development
+frontend_url = os.environ.get("FRONTEND_URL", "https://menu-plus-rho.vercel.app")
+origins = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://menu-plus-rho.vercel.app",
+    frontend_url
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://localhost:3000", frontend_url, "*"],
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
