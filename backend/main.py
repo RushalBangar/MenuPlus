@@ -12,9 +12,10 @@ load_dotenv()
 app = FastAPI(title="Smart Restaurant Management System API", version="1.0.0")
 
 # CORS middleware for Next.js frontend
+frontend_url = os.environ.get("FRONTEND_URL", "*")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://localhost:3000"], 
+    allow_origins=["http://localhost:3000", "https://localhost:3000", frontend_url, "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
