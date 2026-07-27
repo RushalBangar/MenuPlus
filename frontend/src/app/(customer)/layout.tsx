@@ -55,9 +55,12 @@ export default function CustomerLayout({
             <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-purple-400 hover:text-purple-300 rounded-lg hover:bg-purple-500/10 transition-all">
               Dashboard
             </Link>
-            <Link href="/login" className="ml-2 btn-primary text-sm px-5 py-2.5 rounded-full">
-              Sign In
-            </Link>
+            <button 
+              onClick={() => { localStorage.removeItem('menuplus_auth_role'); window.location.href = '/login'; }}
+              className="ml-2 px-5 py-2.5 text-sm font-bold rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-all"
+            >
+              Sign Out
+            </button>
           </nav>
         </div>
       </header>
@@ -90,10 +93,13 @@ export default function CustomerLayout({
           <span className="text-lg">📊</span>
           <span>Admin</span>
         </Link>
-        <Link href="/login" className={`flex flex-col items-center gap-1 text-[11px] font-semibold py-1 px-3 rounded-xl ${pathname === '/login' ? 'text-purple-400 bg-purple-500/10' : 'text-slate-400'}`}>
-          <span className="text-lg">🔑</span>
-          <span>Login</span>
-        </Link>
+        <button 
+          onClick={() => { localStorage.removeItem('menuplus_auth_role'); window.location.href = '/login'; }}
+          className="flex flex-col items-center gap-1 text-[11px] font-semibold py-1 px-3 rounded-xl text-red-400"
+        >
+          <span className="text-lg">🚪</span>
+          <span>Logout</span>
+        </button>
       </nav>
 
       {/* Footer */}

@@ -70,12 +70,12 @@ export default function ManagementLayout({
           })}
         </nav>
         <div className="p-4 border-t border-white/[0.08]">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+          <button
+            onClick={() => { localStorage.removeItem('menuplus_auth_role'); window.location.href = '/login'; }}
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:text-white hover:bg-red-500/20 bg-red-500/10 transition-all border border-red-500/20"
           >
-            ← Exit to Customer App
-          </Link>
+            ← Sign Out
+          </button>
         </div>
       </aside>
 
@@ -93,9 +93,12 @@ export default function ManagementLayout({
             <h2 className="text-sm md:text-base font-semibold text-slate-200 truncate">Management Hub</h2>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" className="text-xs text-slate-400 hover:text-white bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
-              Exit
-            </Link>
+            <button 
+              onClick={() => { localStorage.removeItem('menuplus_auth_role'); window.location.href = '/login'; }}
+              className="text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg border border-red-500/20 transition-all"
+            >
+              Sign Out
+            </button>
             <span className="text-[11px] text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-full font-bold">
               Manager
             </span>
