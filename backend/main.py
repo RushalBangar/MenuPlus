@@ -229,39 +229,48 @@ def get_orders():
                 .order("created_at", desc=True)
                 .execute()
             )
-            orders_list = []
-            for row in response.data:
-                items_str_list = []
-                for oi in row.get("order_items", []):
-                    qty = oi.get("quantity", 1)
-                    name = (
-                        oi.get("menu_items", {}).get("name", "Item")
-                        if oi.get("menu_items")
-                        else "Item"
+            if response.data:
+                orders_list = []
+                for row in response.data:
+                    items_str_list = []
+                    for oi in row.get("order_items", []):
+                        qty = oi.get("quantity", 1)
+                        name = (
+                            oi.get("menu_items", {}).get("name", "Item")
+                            if oi.get("menu_items")
+                            else "Item"
+                        )
+                        items_str_list.append(f"{qty}x {name}")
+                    row["items"] = (
+                        ", ".join(items_str_list) if items_str_list else "Custom Order"
                     )
-                    items_str_list.append(f"{qty}x {name}")
-                row["items"] = (
-                    ", ".join(items_str_list) if items_str_list else "Custom Order"
-                )
-                orders_list.append(row)
-            return orders_list
+                    orders_list.append(row)
+                return orders_list
         except Exception as e:
             print(f"DB Error fetching orders: {e}")
             pass
+    # Fallback mock orders for demo
     return [
         {
-            "id": "ORD-001",
-            "items": "2x Classic Burger, 1x Truffle Fries",
-            "total_amount": 32.97,
-            "status": "New",
-            "created_at": "2 mins ago",
+            "id": "ORD-041",
+            "items": "2x Classic Burger, 1x Matcha Latte",
+            "total_amount": 31.48,
+            "status": "Preparing",
+            "created_at": "3 mins ago",
         },
         {
-            "id": "ORD-002",
-            "items": "1x Vegan Wrap",
-            "total_amount": 10.50,
-            "status": "Preparing",
-            "created_at": "15 mins ago",
+            "id": "ORD-040",
+            "items": "1x Vegan Wrap, 1x Truffle Fries",
+            "total_amount": 17.49,
+            "status": "Ready",
+            "created_at": "12 mins ago",
+        },
+        {
+            "id": "ORD-039",
+            "items": "3x Matcha Latte",
+            "total_amount": 16.50,
+            "status": "Served",
+            "created_at": "28 mins ago",
         },
     ]
 
@@ -338,7 +347,21 @@ def get_inventory():
                 return response.data
         except Exception:
             pass
-    return []
+    # Fallback mock inventory for demo
+    return [
+        {"id": 1, "ingredient_name": "Truffle Oil", "quantity": 3, "unit": "Liters", "low_stock_threshold": 2},
+        {"id": 2, "ingredient_name": "A5 Wagyu Beef", "quantity": 8, "unit": "Kg", "low_stock_threshold": 5},
+        {"id": 3, "ingredient_name": "Matcha Powder", "quantity": 4, "unit": "Kg", "low_stock_threshold": 2},
+        {"id": 4, "ingredient_name": "Mozzarella Cheese", "quantity": 12, "unit": "Kg", "low_stock_threshold": 3},
+        {"id": 5, "ingredient_name": "Atlantic Salmon", "quantity": 6, "unit": "Kg", "low_stock_threshold": 4},
+        {"id": 6, "ingredient_name": "Yuzu Juice", "quantity": 2, "unit": "Liters", "low_stock_threshold": 1},
+        {"id": 7, "ingredient_name": "Dark Chocolate 70%", "quantity": 5, "unit": "Kg", "low_stock_threshold": 2},
+        {"id": 8, "ingredient_name": "Empress Gin", "quantity": 4, "unit": "Bottles", "low_stock_threshold": 2},
+        {"id": 9, "ingredient_name": "Garlic Bulbs", "quantity": 25, "unit": "Pieces", "low_stock_threshold": 10},
+        {"id": 10, "ingredient_name": "Parmesan Reggiano", "quantity": 3, "unit": "Kg", "low_stock_threshold": 2},
+        {"id": 11, "ingredient_name": "Oat Milk", "quantity": 8, "unit": "Liters", "low_stock_threshold": 3},
+        {"id": 12, "ingredient_name": "Fresh Basil", "quantity": 15, "unit": "Bunches", "low_stock_threshold": 5},
+    ]
 
 
 @app.put("/api/inventory/{item_id}/restock")
