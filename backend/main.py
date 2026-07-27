@@ -6,6 +6,12 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 from typing import List
 
+try:
+    import google.generativeai as genai
+    HAS_GEMINI_SDK = True
+except ImportError:
+    HAS_GEMINI_SDK = False
+
 from models import (
     MenuItem,
     OrderCreate,
@@ -51,6 +57,14 @@ key: str = os.environ.get("SUPABASE_KEY", "")
 supabase: Client | None = None
 if url and key:
     supabase = create_client(url, key)
+
+# Initialize Gemini AI
+gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
+if HAS_GEMINI_SDK and gemini_api_key:
+    genai.configure(api_key=gemini_api_key)
+    gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+else:
+    gemini_model = None
 
 # Rich Fine Dining Menu
 MOCK_MENU = [
@@ -443,7 +457,7 @@ def get_inventory_forecast():
 def query_ai_assistant(req: AIAssistantRequest):
     q = req.query.lower()
 
-    # Dynamic DB checks for Assistant
+    # Dynamic DB checks for Assistant Context
     total_rev = 0
     orders_count = 0
     low_stock = []
@@ -452,35 +466,53 @@ def query_ai_assistant(req: AIAssistantRequest):
             ord_res = supabase.table("orders").select("total_amount").execute()
             if ord_res.data:
                 orders_count = len(ord_res.data)
-                total_rev = sum(
-                    o["total_amount"] for o in ord_res.data if o["total_amount"]
-                )
+                total_rev = sum(o["total_amount"] for o in ord_res.data if o["total_amount"])
 
             inv_res = supabase.table("inventory").select("*").execute()
             if inv_res.data:
                 for i in inv_res.data:
                     if float(i["quantity"]) <= float(i["low_stock_threshold"]):
-                        low_stock.append(
-                            f"{i['ingredient_name']} ({i['quantity']}{i['unit']})"
-                        )
+                        low_stock.append(f"{i['ingredient_name']} ({i['quantity']}{i['unit']})")
         except Exception:
             pass
+            
+    if gemini_model:
+        try:
+            context = f"""
+You are the MenuPlus AI Restaurant Manager Assistant.
+Current live restaurant data:
+- Orders today: {orders_count}
+- Total Revenue: ${total_rev:.2f}
+- Low Stock Alerts: {', '.join(low_stock) if low_stock else 'None'}
+- Active Staff: Chef Gordon (Morning), Sarah Connor (Evening), Alex Rivera (Evening), Elena Rostova (Morning)
+- Top Selling: Classic Burger, A5 Wagyu Striploin, Truffle Fries
 
+Answer the manager's query clearly, concisely, and based ONLY on this restaurant context. 
+Provide brief 1-3 sentence answers. Do not use Markdown formatting like **.
+"""
+            prompt = context + "\n\nManager's Query: " + req.query
+            response = gemini_model.generate_content(prompt)
+            ans = response.text.replace('*', '').strip()
+            
+            # Simple heuristic for suggested actions based on context
+            actions = ["View Analytics Chart", "Create Supplier Order"] if low_stock else ["View Analytics Chart", "Manage Staff Shifts"]
+            return AIAssistantResponse(answer=ans, suggested_actions=actions)
+        except Exception as e:
+            print(f"Gemini API Error: {e}")
+            # Fall back to heuristic if API fails
+
+    # Fallback heuristic logic if no Gemini API key or error
     if "best seller" in q or "popular" in q:
-        ans = "Our top-selling item today is the **Classic Burger** with 48 orders, followed closely by **A5 Wagyu Striploin** and **Truffle Fries**!"
+        ans = "Our top-selling item today is the Classic Burger with 48 orders, followed closely by A5 Wagyu Striploin and Truffle Fries!"
         actions = ["View Top Items", "Check Inventory for Beef Patties"]
     elif "revenue" in q or "sales" in q:
-        ans = (
-            f"Based on live data, total revenue today is **${total_rev:.2f}** across {orders_count} orders."
-            if orders_count > 0
-            else "Total revenue today is **$3,428.50** across 72 orders. Average order value is **$47.61**."
-        )
+        ans = f"Based on live data, total revenue today is ${total_rev:.2f} across {orders_count} orders." if orders_count > 0 else "Total revenue today is $3,428.50 across 72 orders. Average order value is $47.61."
         actions = ["View Analytics Chart", "Export Daily Report"]
     elif "stock" in q or "inventory" in q:
         if low_stock:
-            ans = f"⚠️ **Low Stock Alert**: We are running low on {', '.join(low_stock)}. Recommend placing a restock order today."
+            ans = f"⚠️ Low Stock Alert: We are running low on {', '.join(low_stock)}. Recommend placing a restock order today."
         else:
-            ans = "⚠️ **Low Stock Alert**: Truffle Oil has 1.5L remaining (estimated depletion in 2 days). We recommend placing a restock order today."
+            ans = "⚠️ Low Stock Alert: Truffle Oil has 1.5L remaining (estimated depletion in 2 days). We recommend placing a restock order today."
         actions = ["Create Supplier Order", "View All Inventory"]
     elif "staff" in q or "waiter" in q:
         ans = "Currently 4 staff members are on active shift. Chef Gordon is managing kitchen orders, and Sarah Connor is heading floor service."
